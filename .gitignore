@@ -1,0 +1,42 @@
+# Byte-compiled files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environment
+venv/
+env/
+.env
+
+# IDE-specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs and debug files
+*.log
+*.out
+*.err
+debug/
+
+# Environment variables
+.env
+*.env
+
+# Data files
+*.csv
+*.xlsx
+
+# Cache files
+*.cache
+*.pkl
+.cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
