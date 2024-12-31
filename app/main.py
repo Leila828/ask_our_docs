@@ -1,16 +1,42 @@
-# This is a sample Python script.
+import streamlit as st
+from dotenv import load_dotenv
+from utils import initialize_environment, process_uploaded_files
+from qa_chain import create_qa_chain
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def main():
+    """Main application logic."""
+    # Load environment and API token
+    huggingface_api_token = initialize_environment()
 
+    # Configure Streamlit app
+    st.set_page_config(page_title="AI Call Center")
+    st.header(" Explore Your Data with One Click")
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+    # File upload
+    uploaded_files = st.file_uploader("Upload Your Company PDFs", type="pdf", accept_multiple_files=True)
 
+    if uploaded_files:
+        st.info("Processing your uploaded documents. This might take a while...")
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+        # Process files and extract text
+        all_text = process_uploaded_files(uploaded_files)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+        # Create QA chain
+        qa_chain = create_qa_chain(all_text, huggingface_api_token)
+
+        # Get user query
+        client_question = st.text_input("Ask a question:")
+        if client_question:
+            with st.spinner("Finding the best answer..."):
+                try:
+                    answer = qa_chain.run(client_question)
+                    # Clean up the response to extract the actual answer
+                    cleaned_response = answer['answer'] if isinstance(answer,
+                                                                      dict) and 'answer' in answer else answer
+                    cleaned_response = cleaned_response.strip().split("Answer:")[-1].strip()
+                    st.write("Answer:", cleaned_response)
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    main()
